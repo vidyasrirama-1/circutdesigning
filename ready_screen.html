@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Electrolyte Analyzer — Ready Screen</title>
+  <style>
+    :root {
+      --navy: #10253f;
+      --blue: #1769aa;
+      --blue-soft: #e9f4ff;
+      --ink: #172b3f;
+      --muted: #6f8194;
+      --surface: #ffffff;
+      --background: #f3f7fb;
+      --danger: #d83b4b;
+      --danger-soft: #fff0f1;
+      --line: #dce6ef;
+      --shadow: 0 18px 45px rgba(27, 59, 91, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      background: var(--background);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button { font: inherit; }
+
+    .app {
+      width: 2240px;
+      height: 1280px;
+      aspect-ratio: 7 / 4;
+      min-height: 1280px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(var(--screen-scale, .25));
+      transform-origin: center center;
+      display: grid;
+      grid-template-rows: 82px 1fr 108px;
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4.8vw;
+      color: white;
+      background: var(--navy);
+    }
+
+    .brand { display: flex; align-items: center; gap: 20px; }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(255,255,255,.65);
+      border-radius: 16px;
+      color: white;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -2px;
+    }
+
+    .brand-name { font-size: 56px; font-weight: 760; letter-spacing: .1px; }
+    .brand-subtitle { margin-top: 5px; color: #a9bdd0; font-size: 27px; letter-spacing: .8px; }
+
+    .system-meta { display: flex; align-items: center; gap: 34px; color: #d8e5ef; font-size: 34px; }
+    .system-meta span { display: flex; align-items: center; gap: 9px; }
+    .online-dot { width: 11px; height: 11px; border-radius: 50%; background: #f2b84b; box-shadow: 0 0 0 5px rgba(242,184,75,.15); }
+
+    main { min-height: 0; padding: 25px 4.8vw 18px; overflow: hidden; }
+
+    .status-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 18px; }
+    .eyebrow { color: var(--blue); font-size: 30px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; }
+    h1 { margin: 11px 0 11px; color: var(--navy); font-size: clamp(66px, 2.4vw, 96px); letter-spacing: -1px; }
+    .helper { margin: 0; color: var(--muted); font-size: 34px; }
+
+    .alert {
+      min-width: 370px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 13px 17px;
+      border: 1px solid #f2c5ca;
+      border-radius: 16px;
+      color: #a82738;
+      background: var(--danger-soft);
+      box-shadow: 0 8px 22px rgba(216,59,75,.08);
+      font-size: 40px;
+      font-weight: 750;
+    }
+
+    .alert-icon { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--danger); font-weight: 900; }
+
+    .content-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(300px, .9fr); gap: 18px; }
+    .panel { padding: 19px; border: 1px solid var(--line); border-radius: 17px; background: var(--surface); box-shadow: var(--shadow); }
+    .panel-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .panel h2 { margin: 0; color: var(--navy); font-size: 46px; }
+    .panel-label { color: var(--muted); font-size: 28px; }
+
+    .parameters { display: grid; grid-template-columns: repeat(4, minmax(90px, 1fr)); gap: 9px; }
+    .parameter { padding: 13px 12px; border: 1px solid #f1c7cc; border-radius: 13px; background: #fffafa; }
+    .parameter-name { color: #8f4650; font-size: 36px; font-weight: 700; }
+    .parameter-value { margin-top: 15px; color: var(--danger); font-size: 64px; font-weight: 800; }
+    .parameter-unit { margin-top: 5px; color: #a66d74; font-size: 27px; }
+
+    .status-list { display: grid; gap: 5px; }
+    .status-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 13px; border-bottom: 1px solid #edf2f6; }
+    .status-item:last-child { border-bottom: 0; }
+    .status-title { color: var(--ink); font-size: 36px; font-weight: 700; }
+    .status-detail { margin-top: 6px; color: var(--muted); font-size: 27px; }
+    .status-badge { padding: 11px 15px; border-radius: 8px; color: #ac293a; background: var(--danger-soft); font-size: 27px; font-weight: 800; }
+
+    .actions { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; padding: 13px 4.8vw; border-top: 1px solid var(--line); background: white; }
+    .action { min-height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px solid var(--line); border-radius: 11px; color: var(--navy); background: white; cursor: pointer; transition: .18s ease; }
+    .action:hover, .action:focus-visible { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); transform: translateY(-2px); }
+    .action.primary { border-color: var(--blue); color: white; background: var(--blue); box-shadow: 0 9px 20px rgba(23,105,170,.20); }
+    .action.primary:hover, .action.primary:focus-visible { color: white; background: #125b94; }
+    .action-icon { font-size: 52px; line-height: 1; }
+    .action-label { font-size: 34px; font-weight: 800; }
+
+    .toast { position: fixed; right: 35px; bottom: 170px; display: none; padding: 15px 20px; border-radius: 12px; color: white; background: var(--navy); box-shadow: var(--shadow); font-size: 16px; }
+    .toast.visible { display: block; animation: appear .18s ease-out; }
+    @keyframes appear { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .screen-overlay { position: fixed; inset: 0; z-index: 10; display: none; background: rgba(16,37,63,.42); backdrop-filter: blur(5px); }
+    .screen-overlay.visible { display: grid; place-items: center; }
+    .menu-card { width: min(900px, 86vw); padding: 34px; border: 1px solid var(--line); border-radius: 24px; background: #fff; box-shadow: 0 28px 70px rgba(16,37,63,.28); }
+    .overlay-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+    .overlay-heading h2 { margin: 0; color: var(--navy); font-size: 50px; }
+    .overlay-heading p { margin: 8px 0 0; color: var(--muted); font-size: 24px; }
+    .close-button { width: 54px; height: 54px; border: 1px solid var(--line); border-radius: 50%; color: var(--navy); background: #fff; font-size: 30px; cursor: pointer; }
+    .close-button:hover { color: var(--blue); border-color: var(--blue); background: var(--blue-soft); }
+    .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .menu-option { display: flex; align-items: center; gap: 18px; min-height: 110px; padding: 20px; border: 1px solid var(--line); border-radius: 16px; color: var(--navy); background: #fff; text-align: left; cursor: pointer; }
+    .menu-option:hover, .menu-option:focus-visible { border-color: var(--blue); background: var(--blue-soft); }
+    .menu-option.featured { border-color: #8bc0e5; background: linear-gradient(135deg, #f0f8ff, #fff); }
+    .menu-option-icon { width: 58px; height: 58px; flex: 0 0 58px; display: grid; place-items: center; border-radius: 15px; color: var(--blue); background: #dff0ff; font-size: 31px; font-weight: 800; }
+    .menu-option strong { display: block; font-size: 29px; }
+    .menu-option small { display: block; margin-top: 5px; color: var(--muted); font-size: 21px; }
+
+    .reagent-card { width: min(1500px, 91vw); min-height: 780px; padding: 34px 42px; border: 1px solid var(--line); border-radius: 24px; background: #fff; box-shadow: 0 28px 70px rgba(16,37,63,.28); }
+    .reagent-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 26px; }
+    .back-button { border: 0; color: var(--blue); background: transparent; font-size: 26px; font-weight: 750; cursor: pointer; }
+    .stepper { display: flex; align-items: center; margin: 32px auto 38px; max-width: 900px; }
+    .step { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 22px; font-weight: 700; white-space: nowrap; }
+    .step.active { color: var(--blue); }
+    .step-number { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; color: white; background: #b8c7d5; }
+    .step.active .step-number { background: var(--blue); }
+    .step-line { height: 2px; flex: 1; margin: 0 15px; background: #dce6ef; }
+    .reagent-layout { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; max-width: 1240px; margin: auto; }
+    .reagent-copy h2 { margin: 0; color: var(--navy); font-size: 52px; }
+    .reagent-copy > p { margin: 13px 0 26px; color: var(--muted); font-size: 25px; line-height: 1.45; }
+    .instruction-list { display: grid; gap: 17px; margin: 0; padding: 0; list-style: none; }
+    .instruction-list li { display: flex; align-items: center; gap: 15px; color: var(--ink); font-size: 25px; }
+    .instruction-list li span { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; color: var(--blue); background: var(--blue-soft); font-size: 19px; font-weight: 800; }
+    .pack-illustration { min-height: 350px; display: grid; place-items: center; border: 1px dashed #a9cce6; border-radius: 20px; background: #f4faff; }
+    .pack-visual { position: relative; width: 210px; height: 260px; border: 8px solid #2d6f9f; border-radius: 20px 20px 30px 30px; background: linear-gradient(90deg, #bfe4f8 0 28%, #e8f6ff 28% 72%, #bfe4f8 72%); box-shadow: 14px 16px 0 rgba(23,105,170,.13); }
+    .pack-visual:before { content: ''; position: absolute; left: 48px; top: -44px; width: 98px; height: 48px; border: 8px solid #2d6f9f; border-bottom: 0; border-radius: 18px 18px 0 0; background: #dff0ff; }
+    .pack-label { position: absolute; inset: 72px 13px auto; padding: 15px 7px; border-radius: 8px; color: var(--navy); background: #fff; text-align: center; font-size: 20px; font-weight: 800; }
+    .reagent-actions { display: flex; justify-content: flex-end; gap: 13px; margin-top: 36px; }
+    .workflow-message { display: none; margin-top: 28px; padding: 24px; border: 1px solid #a9cce6; border-radius: 14px; color: var(--navy); background: #f4faff; font-size: 27px; line-height: 1.35; }
+    .workflow-message.visible { display: block; }
+    .workflow-message strong { display: block; margin-bottom: 7px; font-size: 31px; }
+    .workflow-message p { margin: 0; }
+    .secondary-button, .continue-button { min-width: 185px; padding: 17px 25px; border-radius: 11px; font-size: 25px; font-weight: 800; cursor: pointer; }
+    .secondary-button { border: 1px solid var(--line); color: var(--navy); background: white; }
+    .continue-button { border: 1px solid var(--blue); color: white; background: var(--blue); }
+    .secondary-button:hover { border-color: var(--blue); color: var(--blue); }
+    .continue-button:hover { background: #125b94; }
+
+    .menu-actions { display: flex; justify-content: flex-end; margin-top: 24px; }
+
+    @media (max-width: 850px), (max-height: 700px) {
+      .reagent-card, .menu-card {
+        width: calc(100vw - 24px);
+        max-height: calc(100vh - 24px);
+        overflow-y: auto;
+      }
+
+      .reagent-actions, .menu-actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 1;
+        padding-top: 12px;
+        background: #fff;
+      }
+    }
+    @media (max-width: 850px) { .menu-grid, .reagent-layout { grid-template-columns: 1fr; } .reagent-card { padding: 25px; } .step { font-size: 16px; } .step-line { margin: 0 7px; } }
+
+    /* Compact mode: keeps the complete analyzer workflow visible on smaller displays. */
+    .brand-subtitle { font-size: 21px; }
+    .system-meta { gap: 22px; font-size: 26px; }
+    main { padding-top: 18px; }
+    .eyebrow { font-size: 22px; }
+    h1 { margin: 7px 0; font-size: clamp(48px, 2.1vw, 72px); }
+    .helper { font-size: 25px; }
+    .alert { min-width: 300px; padding: 10px 13px; font-size: 28px; }
+    .panel { padding: 15px; }
+    .panel h2 { font-size: 34px; }
+    .panel-label { font-size: 21px; }
+    .parameter { padding: 10px; }
+    .parameter-name { font-size: 27px; }
+    .parameter-value { margin-top: 8px; font-size: 47px; }
+    .parameter-unit { margin-top: 3px; font-size: 20px; }
+    .status-item { padding: 8px 10px; }
+    .status-title { font-size: 27px; }
+    .status-detail { margin-top: 3px; font-size: 20px; }
+    .status-badge { padding: 8px 11px; font-size: 20px; }
+    .actions { padding-top: 9px; padding-bottom: 9px; }
+    .action { min-height: 58px; }
+    .action-icon { font-size: 38px; }
+    .action-label { font-size: 25px; }
+    .menu-card { padding: 26px; }
+    .overlay-heading { margin-bottom: 20px; }
+    .overlay-heading h2 { font-size: 38px; }
+    .overlay-heading p { font-size: 19px; }
+    .menu-option { min-height: 86px; padding: 14px; }
+    .menu-option-icon { width: 46px; height: 46px; flex-basis: 46px; font-size: 25px; }
+    .menu-option strong { font-size: 23px; }
+    .menu-option small { font-size: 17px; }
+    .reagent-card { min-height: 0; padding: 26px 32px; }
+    .reagent-head { padding-bottom: 18px; }
+    .back-button { font-size: 21px; }
+    .stepper { margin: 22px auto 28px; }
+    .step { font-size: 18px; }
+    .step-number { width: 32px; height: 32px; }
+    .reagent-copy h2 { font-size: 40px; }
+    .reagent-copy > p { margin: 9px 0 18px; font-size: 21px; }
+    .instruction-list { gap: 11px; }
+    .instruction-list li { gap: 11px; font-size: 21px; }
+    .instruction-list li span { width: 29px; height: 29px; font-size: 16px; }
+    .pack-illustration { min-height: 270px; }
+    .pack-visual { width: 160px; height: 205px; }
+    .pack-visual:before { left: 36px; top: -36px; width: 72px; height: 40px; }
+    .pack-label { inset: 55px 10px auto; padding: 11px 5px; font-size: 16px; }
+    .reagent-actions { margin-top: 24px; }
+    .secondary-button, .continue-button { min-width: 145px; padding: 13px 19px; font-size: 20px; }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">aQ</div>
+        <div>
+          <div class="brand-subtitle">Electrolyte Analyzer</div>
+        </div>
+      </div>
+      <div class="system-meta">
+        <span><i class="online-dot"></i> System status</span>
+        <span id="date">--/--/----</span>
+        <span id="clock">--:--</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="status-row">
+        <div>
+          <div class="eyebrow">Analyzer status</div>
+          <h1>System not ready</h1>
+          <p class="helper">Calibration is required before sample analysis.</p>
+        </div>
+        <div class="alert"><span class="alert-icon">!</span> System uncalibrated. Please calibrate.</div>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel">
+          <div class="panel-heading">
+            <h2>Measured parameters</h2>
+            <span class="panel-label">Calibration required</span>
+          </div>
+          <div class="parameters">
+            <div class="parameter"><div class="parameter-name">Na⁺</div><div class="parameter-value">—</div><div class="parameter-unit">mmol/L</div></div>
+            <div class="parameter"><div class="parameter-name">K⁺</div><div class="parameter-value">—</div><div class="parameter-unit">mmol/L</div></div>
+            <div class="parameter"><div class="parameter-name">Cl⁻</div><div class="parameter-value">—</div><div class="parameter-unit">mmol/L</div></div>
+            <div class="parameter"><div class="parameter-name">Ca²⁺</div><div class="parameter-value">—</div><div class="parameter-unit">mmol/L</div></div>
+            <div class="parameter"><div class="parameter-name">Li⁺</div><div class="parameter-value">—</div><div class="parameter-unit">mmol/L</div></div>
+            <div class="parameter"><div class="parameter-name">HCO₃⁻</div><div class="parameter-value">—</div><div class="parameter-unit">mmol/L</div></div>
+            <div class="parameter"><div class="parameter-name">pH</div><div class="parameter-value">—</div><div class="parameter-unit">pH units</div></div>
+            <div class="parameter"><div class="parameter-name">TCO₂</div><div class="parameter-value">—</div><div class="parameter-unit">mmol/L</div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading">
+            <h2>System overview</h2>
+            <span class="panel-label">Before calibration</span>
+          </div>
+          <div class="status-list">
+            <div class="status-item"><div><div class="status-title">Calibration</div><div class="status-detail">No valid calibration stored</div></div><span class="status-badge">Required</span></div>
+            <div class="status-item"><div><div class="status-title">Reagent pack</div><div class="status-detail">Status will be checked at startup</div></div><span class="status-badge">Check</span></div>
+            <div class="status-item"><div><div class="status-title">Analyzer temperature</div><div class="status-detail">Waiting for initialization</div></div><span class="status-badge">Pending</span></div>
+            <div class="status-item"><div><div class="status-title">Last maintenance</div><div class="status-detail">No maintenance record</div></div><span class="status-badge">Pending</span></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="actions" aria-label="Analyzer actions">
+      <button class="action primary" data-action="calibrate"><span class="action-icon">◌</span><span class="action-label">Calibrate</span></button>
+      <button class="action" data-action="analyze"><span class="action-icon">⌁</span><span class="action-label">Analyze</span></button>
+      <button class="action" data-action="menu"><span class="action-icon">☰</span><span class="action-label">Menu</span></button>
+      <button class="action" data-action="reports"><span class="action-icon">▤</span><span class="action-label">Reports</span></button>
+      <button class="action" data-action="wash"><span class="action-icon">♒</span><span class="action-label">Wash</span></button>
+      <button class="action" data-action="standby"><span class="action-icon">⏾</span><span class="action-label">Standby</span></button>
+      <button class="action" data-action="shutdown"><span class="action-icon">⏻</span><span class="action-label">Shutdown</span></button>
+    </nav>
+  </div>
+
+  <div class="screen-overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="menuTitle">Menu</h2><p>Manage analyzer settings and supplies.</p></div>
+        <button class="close-button" data-close="menuOverlay" aria-label="Close menu">×</button>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-option" data-open="diagnosticsOverlay"><span class="menu-option-icon">⌁</span><span><strong>Diagnostics</strong><small>Run analyzer diagnostics</small></span></button>
+        <button class="menu-option" data-open="userMenuOverlay"><span class="menu-option-icon">♙</span><span><strong>User Menu</strong><small>Manage user functions</small></span></button>
+        <button class="menu-option" data-open="setupMenuOverlay"><span class="menu-option-icon">⚙</span><span><strong>Setup Menu</strong><small>Configure system setup</small></span></button>
+        <button class="menu-option" data-open="parametersOverlay"><span class="menu-option-icon">▤</span><span><strong>Parameters</strong><small>Configure measured parameters</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">◎</span><span><strong>Select ica unit</strong><small>Select the ISE unit</small></span></button>
+        <button class="menu-option featured" data-open="reagentOverlay"><span class="menu-option-icon">＋</span><span><strong>New Reagent pack</strong><small>Install and activate a replacement pack</small></span></button>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-close="menuOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="diagnosticsOverlay" role="dialog" aria-modal="true" aria-labelledby="diagnosticsTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="diagnosticsTitle">Diagnostics</h2><p>Select a diagnostic function.</p></div>
+        <button class="close-button" data-close="diagnosticsOverlay" aria-label="Close diagnostics">×</button>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-option" data-open="cleanerOverlay"><span class="menu-option-icon">◌</span><span><strong>Daily Cleaner</strong><small>Run the daily cleaning cycle</small></span></button>
+        <button class="menu-option" data-open="maintenanceOverlay"><span class="menu-option-icon">▣</span><span><strong>Maintenance</strong><small>Run maintenance procedures</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">◉</span><span><strong>Sensor</strong><small>Check sensor status</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">⇄</span><span><strong>Flow</strong><small>Check fluid flow</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">⚙</span><span><strong>Hardware</strong><small>Check analyzer hardware</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">＋</span><span><strong>Reagent Pack</strong><small>Check reagent pack status</small></span></button>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="diagnosticsOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="userMenuOverlay" role="dialog" aria-modal="true" aria-labelledby="userMenuTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="userMenuTitle">User Menu</h2><p>Configure user operating preferences.</p></div>
+        <button class="close-button" data-close="userMenuOverlay" aria-label="Close User Menu">×</button>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-option"><span class="menu-option-icon">↔</span><span><strong>Normal Ranges</strong><small>Set normal measurement ranges</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">◷</span><span><strong>Calibration frequency</strong><small>Set calibration frequency</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">⌁</span><span><strong>Sipping frequency</strong><small>Set sample sipping frequency</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">⏾</span><span><strong>Auto standby</strong><small>Configure automatic standby</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">±</span><span><strong>Correction Factor</strong><small>Set correction factors</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">◌</span><span><strong>Precision</strong><small>Configure result precision</small></span></button>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="userMenuOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="cleanerOverlay" role="dialog" aria-modal="true" aria-labelledby="cleanerTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="cleanerTitle">Daily Cleaner</h2><p>Cleaning instruction</p></div>
+        <button class="close-button" data-back="cleanerOverlay" data-return="diagnosticsOverlay" aria-label="Close Daily Cleaner">×</button>
+      </div>
+      <div class="workflow-message visible" role="status">
+        <strong id="cleanerPrompt">Please lift the Sampler and insert the Cleaner</strong>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="cleanerOverlay" data-return="diagnosticsOverlay">Exit</button><button class="continue-button" id="cleanerContinue">Continue</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="maintenanceOverlay" role="dialog" aria-modal="true" aria-labelledby="maintenanceTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="maintenanceTitle">Maintenance</h2><p>Maintenance function selected.</p></div>
+        <button class="close-button" data-back="maintenanceOverlay" data-return="diagnosticsOverlay" aria-label="Close Maintenance">×</button>
+      </div>
+      <div class="workflow-message visible" role="status">
+        <strong>Maintenance process is progressing</strong>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="maintenanceOverlay" data-return="diagnosticsOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="setupMenuOverlay" role="dialog" aria-modal="true" aria-labelledby="setupMenuTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="setupMenuTitle">Setup Menu</h2><p>Configure analyzer system settings.</p></div>
+        <button class="close-button" data-close="setupMenuOverlay" aria-label="Close Setup Menu">×</button>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-option"><span class="menu-option-icon">◈</span><span><strong>Analyse type</strong><small>Choose the analysis type</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">◷</span><span><strong>Date time</strong><small>Set the analyzer date and time</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">▤</span><span><strong>Printer</strong><small>Configure printer settings</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">▥</span><span><strong>Printmv</strong><small>Configure printmv output</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">▣</span><span><strong>Patient Id</strong><small>Configure patient identification</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">☷</span><span><strong>Print Parameters</strong><small>Choose printed parameters</small></span></button>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="setupMenuOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="parametersOverlay" role="dialog" aria-modal="true" aria-labelledby="parametersTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="parametersTitle">Parameters</h2><p>Select a measured parameter.</p></div>
+        <button class="close-button" data-close="parametersOverlay" aria-label="Close Parameters">×</button>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-option"><span class="menu-option-icon">Na</span><span><strong>Sodium</strong><small>Configure sodium measurement</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">K</span><span><strong>Potassium</strong><small>Configure potassium measurement</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">Ca</span><span><strong>Ionized Calcium</strong><small>Configure ionized calcium measurement</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">Cl</span><span><strong>Chloride</strong><small>Configure chloride measurement</small></span></button>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="parametersOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="reagentOverlay" role="dialog" aria-modal="true" aria-labelledby="reagentTitle">
+    <section class="reagent-card">
+      <div class="reagent-head"><button class="back-button" data-back="reagentOverlay">← Back to menu</button><span class="panel-label">Menu / Reagent pack</span></div>
+      <div class="stepper" aria-label="Installation progress"><div class="step active"><span class="step-number">1</span>Prepare</div><span class="step-line"></span><div class="step"><span class="step-number">2</span>Install</div><span class="step-line"></span><div class="step"><span class="step-number">3</span>Activate</div></div>
+      <div class="reagent-layout">
+        <div class="reagent-copy"><div class="eyebrow">New reagent pack</div><h2 id="reagentTitle">Prepare the replacement pack</h2><p id="reagentDescription">Follow the steps below to install a new reagent pack. Keep the analyzer powered on during the process.</p><ol class="instruction-list" id="reagentInstructions"><li><span>1</span>Remove the empty reagent pack from the analyzer.</li><li><span>2</span>Unpack the new pack and check the expiry date.</li><li><span>3</span>Insert the pack until it clicks into place.</li></ol><div class="workflow-message" id="workflowMessage" role="status" aria-live="polite"><strong id="workflowTitle"></strong><p id="workflowText"></p></div></div>
+        <div class="pack-illustration" aria-label="Reagent pack illustration"><div class="pack-visual"><div class="pack-label">aQ<br><small>REAGENT PACK</small></div></div></div>
+      </div>
+      <div class="reagent-actions"><button class="secondary-button" id="exitWorkflow" data-back="reagentOverlay">Exit</button><button class="continue-button" id="continueInstall">Continue</button></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script>
+    const clock = document.getElementById('clock');
+    const date = document.getElementById('date');
+    const toast = document.getElementById('toast');
+    let toastTimer;
+
+    function updateClock() {
+      clock.textContent = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' }).format(new Date());
+      date.textContent = new Intl.DateTimeFormat([], { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date());
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    function fitLandscapeScreen() {
+      const scale = Math.min(window.innerWidth / 2240, window.innerHeight / 1280);
+      document.documentElement.style.setProperty('--screen-scale', Math.max(scale, 0.1));
+    }
+    fitLandscapeScreen();
+    window.addEventListener('resize', fitLandscapeScreen);
+
+    document.querySelectorAll('[data-action]').forEach(button => {
+      button.addEventListener('click', () => {
+        const label = button.querySelector('.action-label').textContent;
+        if (button.dataset.action === 'menu') {
+          document.getElementById('menuOverlay').classList.add('visible');
+          return;
+        }
+        const message = label === 'Calibrate'
+          ? 'Calibration workflow will begin.'
+          : `${label} screen selected.`;
+        toast.textContent = message;
+        toast.classList.add('visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('visible'), 2200);
+      });
+    });
+
+    document.querySelectorAll('[data-close]').forEach(button => {
+      button.addEventListener('click', () => document.getElementById(button.dataset.close).classList.remove('visible'));
+    });
+    document.querySelectorAll('[data-open]').forEach(button => {
+      button.addEventListener('click', () => {
+        document.getElementById('menuOverlay').classList.remove('visible');
+        document.getElementById(button.dataset.open).classList.add('visible');
+        if (button.dataset.open === 'cleanerOverlay') {
+          cleanerStage = 0;
+          cleanerPrompt.textContent = 'Please lift the Sampler and insert the Cleaner';
+          cleanerContinue.disabled = false;
+        }
+      });
+    });
+    document.querySelectorAll('[data-back]').forEach(button => {
+      button.addEventListener('click', () => {
+        document.getElementById(button.dataset.back).classList.remove('visible');
+        document.getElementById(button.dataset.return || 'menuOverlay').classList.add('visible');
+      });
+    });
+    const reagentTitle = document.getElementById('reagentTitle');
+    const reagentDescription = document.getElementById('reagentDescription');
+    const reagentInstructions = document.getElementById('reagentInstructions');
+    const workflowMessage = document.getElementById('workflowMessage');
+    const workflowTitle = document.getElementById('workflowTitle');
+    const workflowText = document.getElementById('workflowText');
+    const continueInstall = document.getElementById('continueInstall');
+    const exitWorkflow = document.getElementById('exitWorkflow');
+
+    function showWorkflowMessage(title, text) {
+      workflowTitle.textContent = title;
+      workflowText.textContent = text;
+      workflowMessage.classList.add('visible');
+    }
+
+    function resetReagentWorkflow() {
+      reagentTitle.textContent = 'Prepare the replacement pack';
+      reagentDescription.textContent = 'Follow the steps below to install a new reagent pack. Keep the analyzer powered on during the process.';
+      reagentInstructions.style.display = '';
+      workflowMessage.classList.remove('visible');
+      continueInstall.textContent = 'Continue';
+      continueInstall.disabled = false;
+      exitWorkflow.textContent = 'Exit';
+    }
+
+    continueInstall.addEventListener('click', () => {
+      if (continueInstall.dataset.stage === 'calibration') {
+        continueInstall.disabled = true;
+        showWorkflowMessage('Calibration in progress', 'The analyzer is calibrating. Please wait.');
+        setTimeout(() => {
+          showWorkflowMessage('Calibration finished', 'The new reagent pack is ready for use.');
+          continueInstall.textContent = 'Done';
+          continueInstall.disabled = false;
+          continueInstall.dataset.stage = 'done';
+        }, 3000);
+        return;
+      }
+
+      if (continueInstall.dataset.stage === 'done') {
+        document.getElementById('reagentOverlay').classList.remove('visible');
+        return;
+      }
+
+      continueInstall.dataset.stage = 'priming';
+      continueInstall.disabled = true;
+      reagentTitle.textContent = 'Priming the new reagent pack';
+      reagentDescription.textContent = 'The analyzer is preparing the calibration solutions before calibration begins.';
+      reagentInstructions.style.display = 'none';
+      showWorkflowMessage('Please wait', 'Priming process is running.');
+
+      setTimeout(() => {
+        showWorkflowMessage('Priming is finished', 'The analyzer is ready for the next step: calibration.');
+        continueInstall.textContent = 'Start calibration';
+        continueInstall.disabled = false;
+        continueInstall.dataset.stage = 'calibration';
+      }, 3000);
+    });
+
+    exitWorkflow.addEventListener('click', resetReagentWorkflow);
+
+    const cleanerPrompt = document.getElementById('cleanerPrompt');
+    const cleanerContinue = document.getElementById('cleanerContinue');
+    let cleanerStage = 0;
+    cleanerContinue.addEventListener('click', () => {
+      if (cleanerStage === 0) {
+        cleanerPrompt.textContent = 'Have you placed the probe in cleaning solution?';
+        cleanerStage = 1;
+        return;
+      }
+
+      if (cleanerStage === 1) {
+        cleanerPrompt.textContent = 'Aspirating the cleaning solution Please wait';
+        cleanerStage = 2;
+        return;
+      }
+
+      if (cleanerStage === 2) {
+        cleanerPrompt.textContent = 'Please remove the sample and close the sampler';
+        cleanerStage = 3;
+        return;
+      }
+
+      cleanerPrompt.textContent = 'Please wait cleaning process is performing';
+      cleanerContinue.disabled = true;
+      cleanerStage = 4;
+    });
+  </script>
+</body>
+</html>
