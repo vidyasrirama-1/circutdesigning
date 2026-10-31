@@ -351,8 +351,8 @@
       <div class="menu-grid">
         <button class="menu-option" data-open="cleanerOverlay"><span class="menu-option-icon">◌</span><span><strong>Daily Cleaner</strong><small>Run the daily cleaning cycle</small></span></button>
         <button class="menu-option" data-open="maintenanceOverlay"><span class="menu-option-icon">▣</span><span><strong>Maintenance</strong><small>Run maintenance procedures</small></span></button>
-        <button class="menu-option"><span class="menu-option-icon">◉</span><span><strong>Sensor</strong><small>Check sensor status</small></span></button>
-        <button class="menu-option"><span class="menu-option-icon">⇄</span><span><strong>Flow</strong><small>Check fluid flow</small></span></button>
+        <button class="menu-option" data-open="sensorOverlay"><span class="menu-option-icon">◉</span><span><strong>Sensor</strong><small>Check sensor status</small></span></button>
+        <button class="menu-option" data-open="flowOverlay"><span class="menu-option-icon">⇄</span><span><strong>Flow</strong><small>Check fluid flow</small></span></button>
         <button class="menu-option"><span class="menu-option-icon">⚙</span><span><strong>Hardware</strong><small>Check analyzer hardware</small></span></button>
         <button class="menu-option"><span class="menu-option-icon">＋</span><span><strong>Reagent Pack</strong><small>Check reagent pack status</small></span></button>
       </div>
@@ -404,6 +404,21 @@
     </section>
   </div>
 
+  <div class="screen-overlay" id="sensorOverlay" role="dialog" aria-modal="true" aria-labelledby="sensorTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="sensorTitle">Sensor</h2><p>Select a calibration solution.</p></div>
+        <button class="close-button" data-back="sensorOverlay" data-return="diagnosticsOverlay" aria-label="Close Sensor">×</button>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-option" data-open="calAOverlay"><span class="menu-option-icon">A</span><span><strong>Cal A</strong><small>Select calibration solution A</small></span></button>
+        <button class="menu-option" data-open="calBOverlay"><span class="menu-option-icon">B</span><span><strong>Cal B</strong><small>Select calibration solution B</small></span></button>
+        <button class="menu-option" data-open="calCOverlay"><span class="menu-option-icon">C</span><span><strong>Cal C</strong><small>Select calibration solution C</small></span></button>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="sensorOverlay" data-return="diagnosticsOverlay">Exit</button></div>
+    </section>
+  </div>
+
   <div class="screen-overlay" id="setupMenuOverlay" role="dialog" aria-modal="true" aria-labelledby="setupMenuTitle">
     <section class="menu-card">
       <div class="overlay-heading">
@@ -438,6 +453,138 @@
     </section>
   </div>
 
+  <div class="screen-overlay" id="calAOverlay" role="dialog" aria-modal="true" aria-labelledby="calATitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="calATitle">SENSOR CAL-A mV</h2><p>Sensor calibration readings</p></div>
+        <button class="close-button" data-back="calAOverlay" data-return="sensorOverlay" aria-label="Close Cal A">×</button>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-option"><span><strong>Na = 35.0mV</strong></span></button>
+        <button class="menu-option"><span><strong>K = 57.1mV</strong></span></button>
+        <button class="menu-option"><span><strong>ica = 50.7mV</strong></span></button>
+        <button class="menu-option"><span><strong>Cl = 44.4mV</strong></span></button>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="calAOverlay" data-return="sensorOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="calBOverlay" role="dialog" aria-modal="true" aria-labelledby="calBTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="calBTitle">SENSOR CAL-B mV</h2><p>Sensor calibration readings</p></div>
+        <button class="close-button" data-back="calBOverlay" data-return="sensorOverlay" aria-label="Close Cal B">×</button>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-option"><span><strong>Na = 14.9mV</strong></span></button>
+        <button class="menu-option"><span><strong>K = 37.6mV</strong></span></button>
+        <button class="menu-option"><span><strong>ica = 62.5mV</strong></span></button>
+        <button class="menu-option"><span><strong>Cl = 64.3mV</strong></span></button>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="calBOverlay" data-return="sensorOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="calCOverlay" role="dialog" aria-modal="true" aria-labelledby="calCTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="calCTitle">SENSOR CAL-C mV</h2><p>Sensor calibration reading</p></div>
+        <button class="close-button" data-back="calCOverlay" data-return="sensorOverlay" aria-label="Close Cal C">×</button>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-option"><span><strong>Cl = 44.3mV</strong></span></button>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="calCOverlay" data-return="sensorOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="flowOverlay" role="dialog" aria-modal="true" aria-labelledby="flowTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="flowTitle">Flow</h2><p>Select a flow function.</p></div>
+        <button class="close-button" data-back="flowOverlay" data-return="diagnosticsOverlay" aria-label="Close Flow">×</button>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-option" data-open="reagentPrimingOverlay"><span class="menu-option-icon">⇄</span><span><strong>Reagents Priming</strong><small>Prime the reagent lines</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">◷</span><span><strong>Pump Calibration</strong><small>Calibrate the pump</small></span></button>
+        <button class="menu-option"><span class="menu-option-icon">▣</span><span><strong>Valve test</strong><small>Test the analyzer valves</small></span></button>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="flowOverlay" data-return="diagnosticsOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="reagentPrimingOverlay" role="dialog" aria-modal="true" aria-labelledby="reagentPrimingTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="reagentPrimingTitle">Reagents Priming</h2><p>Select a priming function.</p></div>
+        <button class="close-button" data-back="reagentPrimingOverlay" data-return="flowOverlay" aria-label="Close Reagents Priming">×</button>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-option" data-open="primeCalAOverlay"><span class="menu-option-icon">A</span><span><strong>Prime Cal A</strong><small>Prime calibration solution A</small></span></button>
+        <button class="menu-option" data-open="primeCalBOverlay"><span class="menu-option-icon">B</span><span><strong>Prime Cal B</strong><small>Prime calibration solution B</small></span></button>
+        <button class="menu-option" data-open="primeCalCOverlay"><span class="menu-option-icon">C</span><span><strong>Prime Cal C</strong><small>Prime calibration solution C</small></span></button>
+        <button class="menu-option" data-open="primeAllOverlay"><span class="menu-option-icon">＋</span><span><strong>Prime All</strong><small>Prime all reagent solutions</small></span></button>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="reagentPrimingOverlay" data-return="flowOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="primeCalAOverlay" role="dialog" aria-modal="true" aria-labelledby="primeCalATitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="primeCalATitle">Priming Cal A</h2><p>Reagent priming in progress.</p></div>
+        <button class="close-button" data-back="primeCalAOverlay" data-return="reagentPrimingOverlay" aria-label="Close Prime Cal A">×</button>
+      </div>
+      <div class="workflow-message visible" role="status">
+        <strong id="primeCalAMessage">Priming Cal A</strong>
+        <p id="primeCalAStatus">Please wait</p>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="primeCalAOverlay" data-return="reagentPrimingOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="primeCalBOverlay" role="dialog" aria-modal="true" aria-labelledby="primeCalBTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="primeCalBTitle">Priming Cal B</h2><p>Reagent priming in progress.</p></div>
+        <button class="close-button" data-back="primeCalBOverlay" data-return="reagentPrimingOverlay" aria-label="Close Prime Cal B">×</button>
+      </div>
+      <div class="workflow-message visible" role="status">
+        <strong id="primeCalBMessage">Priming Cal B</strong>
+        <p id="primeCalBStatus">Please wait</p>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="primeCalBOverlay" data-return="reagentPrimingOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="primeCalCOverlay" role="dialog" aria-modal="true" aria-labelledby="primeCalCTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="primeCalCTitle">Priming Cal C</h2><p>Reagent priming in progress.</p></div>
+        <button class="close-button" data-back="primeCalCOverlay" data-return="reagentPrimingOverlay" aria-label="Close Prime Cal C">×</button>
+      </div>
+      <div class="workflow-message visible" role="status">
+        <strong id="primeCalCMessage">Priming Cal C</strong>
+        <p id="primeCalCStatus">Please wait</p>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="primeCalCOverlay" data-return="reagentPrimingOverlay">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="screen-overlay" id="primeAllOverlay" role="dialog" aria-modal="true" aria-labelledby="primeAllTitle">
+    <section class="menu-card">
+      <div class="overlay-heading">
+        <div><h2 id="primeAllTitle">Prime All</h2><p>Reagent priming in progress.</p></div>
+        <button class="close-button" data-back="primeAllOverlay" data-return="reagentPrimingOverlay" aria-label="Close Prime All">×</button>
+      </div>
+      <div class="workflow-message visible" role="status">
+        <strong id="primeAllMessage">Priming Cal B</strong>
+        <p id="primeAllStatus">Please wait</p>
+      </div>
+      <div class="menu-actions"><button class="secondary-button" data-back="primeAllOverlay" data-return="reagentPrimingOverlay">Exit</button></div>
+    </section>
+  </div>
+
   <div class="screen-overlay" id="reagentOverlay" role="dialog" aria-modal="true" aria-labelledby="reagentTitle">
     <section class="reagent-card">
       <div class="reagent-head"><button class="back-button" data-back="reagentOverlay">← Back to menu</button><span class="panel-label">Menu / Reagent pack</span></div>
@@ -456,6 +603,7 @@
     const date = document.getElementById('date');
     const toast = document.getElementById('toast');
     let toastTimer;
+    let primeAllTimer;
 
     function updateClock() {
       clock.textContent = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' }).format(new Date());
@@ -499,6 +647,32 @@
           cleanerStage = 0;
           cleanerPrompt.textContent = 'Please lift the Sampler and insert the Cleaner';
           cleanerContinue.disabled = false;
+        }
+        const primeCal = { primeCalAOverlay: 'Cal A', primeCalBOverlay: 'Cal B', primeCalCOverlay: 'Cal C' }[button.dataset.open];
+        if (primeCal) {
+          const key = primeCal.replace(' ', '');
+          document.getElementById(`prime${key}Message`).textContent = `Priming ${primeCal}`;
+          document.getElementById(`prime${key}Status`).textContent = 'Please wait';
+          setTimeout(() => {
+            document.getElementById(`prime${key}Message`).textContent = `Priming ${primeCal} completed.`;
+            document.getElementById(`prime${key}Status`).textContent = '';
+          }, 3000);
+        }
+        if (button.dataset.open === 'primeAllOverlay') {
+          const message = document.getElementById('primeAllMessage');
+          const status = document.getElementById('primeAllStatus');
+          const steps = ['Priming Cal B', 'Priming Cal A', 'Priming Cal C', 'Priming all completed'];
+          let step = 0;
+          clearTimeout(primeAllTimer);
+          const advancePrimeAll = () => {
+            message.textContent = steps[step];
+            status.textContent = step < steps.length - 1 ? 'Please wait' : '';
+            if (step < steps.length - 1) {
+              step += 1;
+              primeAllTimer = setTimeout(advancePrimeAll, 3000);
+            }
+          };
+          advancePrimeAll();
         }
       });
     });
